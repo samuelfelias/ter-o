@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terço Católico</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display&display=swap" rel="stylesheet">
+    <link rel="icon" href="cross.png" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 3vh;
+            font-family: 'Playfair Display', serif;
+            color: #f5f5f5;
+            overflow-x: hidden;
+        }
+        h1 {
+            color: #ffd700;
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2em, 6vw, 4em);
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+            margin-bottom: 2vh;
+            animation: glow 2s infinite alternate;
+        }
+        .mystery-selector {
+            margin-bottom: 2vh;
+            text-align: center;
+        }
+        .mystery-selector select {
+            padding: 1vh 2vw;
+            font-size: clamp(1em, 2.5vw, 1.2em);
+            font-family: 'Playfair Display', serif;
+            background: #2a3233;
+            color: #ffd700;
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .container {
+            display: flex;
+            width: 95%;
+            max-width: 1200px;
+            gap: 3vw;
+            justify-content: center;
+        }
+        .rosary-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(180deg, #2a3233, #1a1f20);
+            padding: 4vh 3vw;
+            border-radius: 30px;
+            border: 3px solid rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.15);
+            width: 50%;
+            max-width: 750px;
+            position: relative;
+        }
+        .mystery-description {
+            width: 40%;
+            height: 130vh;
+            background: linear-gradient(180deg, #2a3233, #1a1f20);
+            padding: 2vh 2vw;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
+            font-size: clamp(0.9em, 2vw, 1em);
+            line-height: 1.5;
+        }
+        .mystery-description h2 {
+            color: #ffd700;
+            font-family: 'Cinzel', serif;
+            margin-bottom: 1vh;
+            text-align: center;
+            font-weight: bold; /* Negrito */
+            text-decoration: underline;
+        }
+        .mystery-description a {
+        color: #87CEEB; /* Azul claro */
+        text-decoration: underline; /* Sublinhado por padrão */
+        font-style: italic; /* Mantém itálico para destacar versículos */
+    }
+    .mystery-description a:hover {
+        color: #B0E0E6; /* Um tom um pouco mais claro ao passar o mouse */
+        text-decoration: underline; /* Mantém sublinhado no hover */
+    }
+        .rosary-item {
+            display: flex;
+            align-items: center;
+            margin: 2vh 0;
+            position: relative;
+            width: 100%;
+            justify-content: center;
+            gap: 2vw;
+        }
+        .bead, .cross, .pendant {
+            cursor: pointer;
+            transition: transform 0.4s ease, filter 0.4s ease;
+        }
+        .bead:hover, .cross:hover, .pendant:hover {
+            transform: scale(1.25);
+            filter: brightness(1.4) drop-shadow(0 0 12px rgba(255, 215, 0, 0.9));
+        }
+        .cross img {
+            width: clamp(60px, 12vw, 90px);
+            height: auto;
+        }
+        .bead img, .pendant img {
+            width: clamp(65px, 11vw, 85px);
+            height: auto;
+            filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.8));
+            transition: filter 0.5s ease;
+        }
+        .checkbox {
+            width: 22px;
+            height: 22px;
+            accent-color: #ffd700;
+            cursor: pointer;
+            position: relative;
+        }
+        .checkbox:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 150%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: clamp(150px, 40vw, 200px);
+            background: linear-gradient(135deg, #fff8e1, #fff);
+            color: #2a2a2a;
+            text-align: center;
+            border-radius: 10px;
+            padding: 1vh 1vw;
+            font-size: clamp(0.8em, 2vw, 0.9em);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid #ffd700;
+            z-index: 5;
+        }
+        .completed img {
+            filter: brightness(0.6) drop-shadow(0 0 12px rgba(255, 255, 255, 0.8));
+        }
+        .tooltip {
+            visibility: hidden;
+            width: clamp(220px, 60vw, 320px);
+            background: linear-gradient(135deg, #fff8e1, #fff);
+            color: #2a2a2a;
+            text-align: center;
+            border-radius: 12px;
+            padding: 1.5vh 1.5vw;
+            position: absolute;
+            z-index: 1;
+            bottom: 140%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            font-size: clamp(0.95em, 2.5vw, 1.1em);
+            border: 1px solid #ffd700;
+        }
+        .prayer-text {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: clamp(300px, 85vw, 550px);
+            background: #fff;
+            color: #333;
+            padding: 2.5vh 2.5vw;
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+            z-index: 10;
+            font-size: clamp(1em, 2.5vw, 1.2em);
+            text-align: center;
+            border: 3px solid #ffd700;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .prayer-text.active {
+            display: block;
+            animation: fadeInPopup 0.3s ease;
+        }
+        .decade-separator {
+            width: 85%;
+            height: 4px;
+            background: linear-gradient(to right, transparent, #ffd700, transparent);
+            margin: 3vh 0;
+            opacity: 0.85;
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+            100% { text-shadow: 0 0 25px rgba(255, 215, 0, 0.9); }
+        }
+        @keyframes fadeInPopup {
+            from { opacity: 0; transform: translate(-50%, -45%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+        @media (max-width: 800px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .rosary-container, .mystery-description {
+                width: 98%;
+            }
+            .mystery-description {
+                margin-top: 2vh;
+            }
+        }
+        @media (max-width: 600px) {
+            .rosary-container {
+                padding: 3vh 5vw;
+                border-width: 2px;
+            }
+            .rosary-item {
+                margin: 1.5vh 0;
+                gap: 3vw;
+            }
+            .checkbox {
+                width: 18px;
+                height: 18px;
+            }
+            h1 {
+                margin-bottom: 2vh;
+            }
+            .decade-separator {
+                width: 90%;
+            }
+            .prayer-text {
+                padding: 2vh 3vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Terço Católico</h1>
+    <div class="mystery-selector">
+        <select id="mysteryChoice">
+            <option value="gloriosos">Mistérios Gloriosos</option>
+            <option value="gozosos">Mistérios Gozosos</option>
+            <option value="luminosos">Mistérios Luminosos</option>
+            <option value="dolorosos">Mistérios Dolorosos</option>
+        </select>
+    </div>
+    <div class="container">
+        <div class="rosary-container" id="rosary">
+            <!-- Cruz: Sinal da Cruz e Creio -->
+            <div class="rosary-item">
+                <div class="cross" data-prayer="Sinal da Cruz">
+                    <img src="Free-Cross-With-Jesus-Background-Black-and-White-SVG-Vector-File-for-Laser-Cutting-3-Photoroom.png" alt="Cruz">
+                    <span class="tooltip">Faça o 'Sinal da Cruz' e reze o 'Creio'</span>
+                </div>
+                <input type="checkbox" class="checkbox" data-tooltip="Reze o 'Sinal da Cruz' e o 'Creio'">
+            </div>
+
+            <!-- Primeira bolinha azul: Pai Nosso -->
+            <div class="rosary-item">
+                <div class="bead" data-prayer="Pai Nosso">
+                    <img src="bola-azul-simples-feita-de-borracha-plastica-ou-borracha_689083-87-Photoroom.png" alt="Bola Azul">
+                    <span class="tooltip">Reze o 'Pai Nosso'</span>
+                </div>
+                <input type="checkbox" class="checkbox" data-tooltip="Reze o 'Pai Nosso'">
+            </div>
+
+            <!-- 3 bolinhas brancas: Ave Maria -->
+            <div class="rosary-item">
+                <div class="bead" data-prayer="Ave Maria">
+                    <img src="images__1_-removebg-preview.png" alt="Bola Branca">
+                    <span class="tooltip">Reze a 'Ave Maria' (1ª de 3)</span>
+                </div>
+                <input type="checkbox" class="checkbox" data-tooltip="Reze a 'Ave Maria'">
+            </div>
+            <div class="rosary-item">
+                <div class="bead" data-prayer="Ave Maria">
+                    <img src="images__1_-removebg-preview.png" alt="Bola Branca">
+                    <span class="tooltip">Reze a 'Ave Maria' (2ª de 3)</span>
+                </div>
+                <input type="checkbox" class="checkbox" data-tooltip="Reze a 'Ave Maria'">
+            </div>
+            <div class="rosary-item">
+                <div class="bead" data-prayer="Ave Maria">
+                    <img src="images__1_-removebg-preview.png" alt="Bola Branca">
+                    <span class="tooltip">Reze a 'Ave Maria' (3ª de 3)</span>
+                </div>
+                <input type="checkbox" class="checkbox" data-tooltip="Reze a 'Ave Maria'">
+            </div>
+
+            <!-- Segunda bolinha azul: Glória ao Pai -->
+            <div class="rosary-item">
+                <div class="bead" data-prayer="Glória">
+                    <img src="bola-azul-simples-feita-de-borracha-plastica-ou-borracha_689083-87-Photoroom.png" alt="Bola Azul">
+                    <span class="tooltip">Reze o 'Glória ao Pai'</span>
+                </div>
+                <input type="checkbox" class="checkbox" data-tooltip="Reze o 'Glória ao Pai'">
+            </div>
+        </div>
+        <div class="mystery-description" id="mysteryText"></div>
+    </div>
+
+    <!-- Pop-up para orações completas -->
+    <div id="prayerPopup" class="prayer-text"></div>
+
+    <script>
+        const rosaryContainer = document.getElementById('rosary');
+        const prayerPopup = document.getElementById('prayerPopup');
+        const mysteryChoice = document.getElementById('mysteryChoice');
+        const mysteryText = document.getElementById('mysteryText');
+
+        // Definição dos mistérios
+        const mysteries = {
+            gloriosos: [
+                "<b>Primeiro Mistério Glorioso</b>: Ressurreição de Jesus\n«No primeiro dia da semana, muito cedo, dirigiram-se ao sepulcro com os aromas que haviam preparado. Acharam a pedra removida longe da abertura do sepulcro. Entraram, mas não encontraram o corpo do Senhor Jesus. Não sabiam elas o que pensar, quando apareceram em frente delas dois personagens com vestes resplandecentes. Como estivessem amedrontadas e voltassem o rosto para o chão, disseram-lhes eles: \"Por que buscais entre os mortos aquele que está vivo? Não está aqui, mas ressuscitou\"» (Lc 24, 1-6).\n",
+                "<b>Segundo Mistério Glorioso</b>: Ascensão de Jesus ao Céu\n«Depois que o Senhor Jesus lhes falou, foi levado ao céu e está sentado à direita de Deus» (Mc 16, 19).\n",
+                "<b>Terceiro Mistério Glorioso</b>: Vinda do Espírito Santo sobre os Apóstolos\n«Chegando o dia de Pentecostes, estavam todos reunidos no mesmo lugar. De repente, veio do céu um ruído, como se soprasse um vento impetuoso, e encheu toda a casa onde estavam sentados. Apareceu-lhes então uma espécie de línguas de fogo que se repartiram e pousaram sobre cada um deles. Ficaram todos cheios do Espírito Santo e começaram a falar em línguas, conforme o Espírito Santo lhes concedia que falassem» (At 2, 1-4).\n",
+                "<b>Quarto Mistério Glorioso</b>: Assunção de Maria\n«Por isto, desde agora, me proclamarão bem-aventurada todas as gerações, porque realizou em mim maravilhas aquele que é poderoso e cujo nome é Santo» (Lc 1, 48-49).\n",
+                "<b>Quinto Mistério Glorioso</b>: Coroação de Maria no Céu\n«Apareceu em seguida um grande sinal no céu: uma Mulher revestida do sol, a lua debaixo dos seus pés e na cabeça uma coroa de doze estrelas» (Ap 12, 1).\n"
+            ],
+            gozosos: [
+                "<b>Primeiro Mistério Gozoso</b>: Anunciação a Maria\n«No sexto mês, o anjo Gabriel foi enviado por Deus a uma cidade da Galiléia, chamada Nazaré, a uma virgem desposada com um homem que se chamava José, da casa de Davi e o nome da virgem era Maria» (Lc 1, 26-27).\n",
+                "<b>Segundo Mistério Gozoso</b>: Visitação de Nossa Senhora a sua prima Isabel\n«Naqueles dias, Maria se levantou e foi às pressas às montanhas, a uma cidade de Judá. Entrou em casa de Zacarias e saudou Isabel. Ora, apenas Isabel ouviu a saudação de Maria, a criança estremeceu no seu seio; e Isabel ficou cheia do Espírito Santo. E exclamou em alta voz: \"Bendita és tu entre as mulheres e bendito é o fruto do teu ventre\"» (Lc 1, 39-42).\n",
+                "<b>Terceiro Mistério Gozoso</b>: Nascimento de Jesus\n«Naqueles tempos apareceu um decreto de César Augusto, ordenando o recenseamento de toda a terra... E deu à luz seu filho primogênito, e, envolvendo-o em faixas, reclinou-o num presépio; porque não havia lugar para eles na hospedaria» (Lc 2, 1-7).\n",
+                "<b>Quarto Mistério Gozoso</b>: Apresentação do Menino Jesus no Templo\n«Completados que foram os oito dias para ser circuncidado o menino, foi-lhe posto o nome de Jesus... Concluídos os dias da sua purificação segundo a Lei de Moisés, levaram-no a Jerusalém para o apresentar ao Senhor» (Lc 2, 21-24).\n",
+                "<b>Quinto Mistério Gozoso</b>: Perda e encontro do Menino Jesus no Templo\n«Seus pais iam todos os anos a Jerusalém para a festa da Páscoa... Três dias depois o acharam no templo, sentado no meio dos doutores, ouvindo-os e interrogando-os» (Lc 2, 41-47).\n"
+            ],
+            luminosos: [
+                "<b>Primeiro Mistério Luminoso</b>: Batismo de Jesus no rio Jordão\n«Depois que Jesus foi batizado, saiu logo da água. Eis que os céus se abriram e viu descer sobre ele, em forma de pomba, o Espírito de Deus...» (Mt 3, 16-17).\n",
+                "<b>Segundo Mistério Luminoso</b>: Auto-revelação de Jesus nas Bodas de Caná\n«Três dias depois, celebravam-se bodas em Caná da Galiléia... Disse, então, sua mãe aos serventes: \"Fazei o que ele vos disser\"» (Jo 2, 1-5).\n",
+                "<b>Terceiro Mistério Luminoso</b>: Anúncio do Reino de Deus\n«Completou-se o tempo e o Reino de Deus está próximo; fazei penitência e crede no Evangelho» (Mc 1, 15).\n",
+                "<b>Quarto Mistério Luminoso</b>: Transfiguração de Jesus\n«Seis dias depois, Jesus tomou consigo Pedro, Tiago e João... Lá se transfigurou na presença deles...» (Mt 17, 1-2).\n",
+                "<b>Quinto Mistério Luminoso</b>: Instituição da Eucaristia\n«Durante a refeição, Jesus tomou o pão, benzeu-o, partiu-o e o deu aos discípulos, dizendo: \"Tomai e comei, isto é meu corpo\"» (Mt 26, 26).\n"
+            ],
+            dolorosos: [
+                "<b>Primeiro Mistério Doloroso</b>: Agonia de Jesus no Horto\n«Retirou-se Jesus com eles para um lugar chamado Getsêmani... \"Meu Pai, se é possível, afasta de mim este cálice!...\"» (Mt 26, 36-39).\n",
+                "<b>Segundo Mistério Doloroso</b>: Flagelação de Jesus\n«Então lhes soltou Barrabás; mas a Jesus mandou açoitar, e o entregou para ser crucificado» (Mt 27, 26).\n",
+                "<b>Terceiro Mistério Doloroso</b>: Coroação de Espinhos\n«Os soldados... trançaram uma coroa de espinhos, meteram-lha na cabeça...» (Mt 27, 27-29).\n",
+                "<b>Quarto Mistério Doloroso</b>: Jesus carregando a cruz no caminho do Calvário\n«Conduziram Jesus ao lugar chamado Gólgota...» (Mc 15, 21-22).\n",
+                "<b>Quinto Mistério Doloroso</b>: Crucifixão e morte de Jesus\n«Chegados que foram ao lugar chamado Calvário, ali o crucificaram...» (Lc 23, 33-46).\n"
+            ]
+        };
+
+        // Textos das orações completas
+        const prayers = {
+            "Sinal da Cruz": "Em nome do Pai, do Filho e do Espírito Santo. Amém.",
+            "Creio": "Creio em Deus Pai todo-poderoso, criador do céu e da terra; e em Jesus Cristo, seu único Filho, nosso Senhor; que foi concebido pelo poder do Espírito Santo; nasceu da Virgem Maria; padeceu sob Pôncio Pilatos; foi crucificado, morto e sepultado; desceu à mansão dos mortos; ressuscitou ao terceiro dia; subiu aos céus; está sentado à direita de Deus Pai todo-poderoso; donde há de vir a julgar os vivos e os mortos. Creio no Espírito Santo; na Santa Igreja Católica; na comunhão dos santos; na remissão dos pecados; na ressurreição da carne; na vida eterna. Amém.",
+            "Pai Nosso": "Pai nosso que estais nos céus, santificado seja o vosso nome; venha a nós o vosso reino; seja feita a vossa vontade, assim na terra como no céu. O pão nosso de cada dia nos dai hoje; perdoai-nos as nossas ofensas, assim como nós perdoamos a quem nos tem ofendido; e não nos deixeis cair em tentação, mas livrai-nos do mal. Amém.",
+            "Ave Maria": "Ave Maria, cheia de graça, o Senhor é convosco; bendita sois vós entre as mulheres, e bendito é o fruto do vosso ventre, Jesus. Santa Maria, Mãe de Deus, rogai por nós, pecadores, agora e na hora de nossa morte. Amém.",
+            "Glória": "Glória ao Pai, ao Filho e ao Espírito Santo. Como era no princípio, agora e sempre, por todos os séculos dos séculos. Amém.",
+            "Salve Rainha": "Salve Rainha, Mãe de misericórdia, vida, doçura e esperança nossa, salve! A vós bradamos, os degredados filhos de Eva; a vós suspiramos, gemendo e chorando neste vale de lágrimas. Eia, pois, advogada nossa, esses vossos olhos misericordiosos a nós volvei; e depois deste desterro, mostrai-nos Jesus, bendito fruto do vosso ventre, ó clemente, ó piedosa, ó doce Virgem Maria. Rogai por nós, Santa Mãe de Deus, para que sejamos dignos das promessas de Cristo. Amém."
+        };
+
+        // Função para criar um mistério
+        function createMystery(mysteryIndex, selectedMysteries) {
+            const decade = document.createElement('div');
+            decade.classList.add('decade');
+
+            // Pai Nosso
+            const blueBead = document.createElement('div');
+            blueBead.classList.add('rosary-item');
+            blueBead.innerHTML = `
+                <div class="bead" data-prayer="Pai Nosso">
+                    <img src="bola-azul-simples-feita-de-borracha-plastica-ou-borracha_689083-87-Photoroom.png" alt="Bola Azul">
+                    <span class="tooltip">Reze o 'Pai Nosso' - ${selectedMysteries[mysteryIndex].split('\n')[0]}</span>
+                </div>
+                <input type="checkbox" class="checkbox" data-tooltip="Reze o 'Pai Nosso' - ${selectedMysteries[mysteryIndex].split('\n')[0]}">
+            `;
+            decade.appendChild(blueBead);
+
+            // 10 Ave Marias
+            for (let i = 1; i <= 10; i++) {
+                const whiteBead = document.createElement('div');
+                whiteBead.classList.add('rosary-item');
+                whiteBead.innerHTML = `
+                    <div class="bead" data-prayer="Ave Maria">
+                        <img src="images__1_-removebg-preview.png" alt="Bola Branca">
+                        <span class="tooltip">Reze a 'Ave Maria' (${i} de 10) - ${selectedMysteries[mysteryIndex].split('\n')[0]}</span>
+                    </div>
+                    <input type="checkbox" class="checkbox" data-tooltip="Reze a 'Ave Maria' (${i} de 10) - ${selectedMysteries[mysteryIndex].split('\n')[0]}">
+                `;
+                decade.appendChild(whiteBead);
+            }
+
+            // Glória ao Pai
+            const gloriaBead = document.createElement('div');
+            gloriaBead.classList.add('rosary-item');
+            gloriaBead.innerHTML = `
+                <div class="bead" data-prayer="Glória">
+                    <img src="bola-azul-simples-feita-de-borracha-plastica-ou-borracha_689083-87-Photoroom.png" alt="Bola Azul">
+                    <span class="tooltip">Reze o 'Glória ao Pai' - ${selectedMysteries[mysteryIndex].split('\n')[0]}</span>
+                </div>
+                <input type="checkbox" class="checkbox" data-tooltip="Reze o 'Glória ao Pai' - ${selectedMysteries[mysteryIndex].split('\n')[0]}">
+            `;
+            decade.appendChild(gloriaBead);
+
+            return decade;
+        }
+
+        function updateRosary() {
+    const selectedMystery = mysteryChoice.value;
+    const selectedMysteries = mysteries[selectedMystery];
+    rosaryContainer.innerHTML = `
+        <div class="rosary-item">
+            <div class="cross" data-prayer="Sinal da Cruz">
+                <img src="Free-Cross-With-Jesus-Background-Black-and-White-SVG-Vector-File-for-Laser-Cutting-3-Photoroom.png" alt="Cruz">
+                <span class="tooltip">Faça o 'Sinal da Cruz' e reze o 'Creio'</span>
+            </div>
+            <input type="checkbox" class="checkbox" data-tooltip="Reze o 'Sinal da Cruz' e o 'Creio'">
+        </div>
+        <div class="rosary-item">
+            <div class="bead" data-prayer="Pai Nosso">
+                <img src="bola-azul-simples-feita-de-borracha-plastica-ou-borracha_689083-87-Photoroom.png" alt="Bola Azul">
+                <span class="tooltip">Reze o 'Pai Nosso'</span>
+            </div>
+            <input type="checkbox" class="checkbox" data-tooltip="Reze o 'Pai Nosso'">
+        </div>
+        <div class="rosary-item">
+            <div class="bead" data-prayer="Ave Maria">
+                <img src="images__1_-removebg-preview.png" alt="Bola Branca">
+                <span class="tooltip">Reze a 'Ave Maria' (1ª de 3 - Fé)</span>
+            </div>
+            <input type="checkbox" class="checkbox" data-tooltip="Reze a 'Ave Maria' (Fé)">
+        </div>
+        <div class="rosary-item">
+            <div class="bead" data-prayer="Ave Maria">
+                <img src="images__1_-removebg-preview.png" alt="Bola Branca">
+                <span class="tooltip">Reze a 'Ave Maria' (2ª de 3 - Esperança)</span>
+            </div>
+            <input type="checkbox" class="checkbox" data-tooltip="Reze a 'Ave Maria' (Esperança)">
+        </div>
+        <div class="rosary-item">
+            <div class="bead" data-prayer="Ave Maria">
+                <img src="images__1_-removebg-preview.png" alt="Bola Branca">
+                <span class="tooltip">Reze a 'Ave Maria' (3ª de 3 - Caridade)</span>
+            </div>
+            <input type="checkbox" class="checkbox" data-tooltip="Reze a 'Ave Maria' (Caridade)">
+        </div>
+        <div class="rosary-item">
+            <div class="bead" data-prayer="Glória">
+                <img src="bola-azul-simples-feita-de-borracha-plastica-ou-borracha_689083-87-Photoroom.png" alt="Bola Azul">
+                <span class="tooltip">Reze o 'Glória ao Pai'</span>
+            </div>
+            <input type="checkbox" class="checkbox" data-tooltip="Reze o 'Glória ao Pai'">
+        </div>
+    `;
+
+    // Adicionar os 5 mistérios
+    for (let i = 0; i < 5; i++) {
+        rosaryContainer.appendChild(createMystery(i, selectedMysteries));
+        if (i < 4) {
+            const separator = document.createElement('div');
+            separator.classList.add('decade-separator');
+            rosaryContainer.appendChild(separator);
+        }
+    }
+
+    // Pingente: Salve Rainha
+    const pendant = document.createElement('div');
+    pendant.classList.add('rosary-item');
+    pendant.innerHTML = `
+        <div class="pendant" data-prayer="Salve Rainha">
+            <img src="popsocket_nossa_senhora_1-Photoroom.png" alt="Pingente">
+            <span class="tooltip">Reze a 'Salve Rainha'</span>
+        </div>
+        <input type="checkbox" class="checkbox" data-tooltip="Reze a 'Salve Rainha'">
+    `;
+    rosaryContainer.appendChild(pendant);
+
+    // Atualizar descrição dos mistérios com formatação
+    let formattedText = `<h2>Mistérios ${selectedMystery.charAt(0).toUpperCase() + selectedMystery.slice(1)}</h2>`;
+    selectedMysteries.forEach(mystery => {
+        const [title, ...rest] = mystery.split('\n');
+        const verseMatch = rest.join('\n').match(/\(.*?\)/); // Captura o versículo entre parênteses
+        if (verseMatch) {
+            const verse = verseMatch[0]; // ex.: "(Lc 24, 1-6)"
+            const bookChapter = verse.slice(1, -1).split(',')[0].trim(); // ex.: "Lc 24"
+            const [book, chapter] = bookChapter.split(' ');
+            const verseRange = verse.slice(1, -1).split(',')[1]?.trim() || '1'; // ex.: "1-6" ou "1"
+            const url = `https://www.bibliaonline.com.br/acf/${book.toLowerCase()}/${chapter}/${verseRange}`; // Link para Bíblia Online
+            const linkedVerse = rest.join('\n').replace(verse, `<a href="${url}" target="_blank">${verse}</a>`);
+            formattedText += `${title}<br>${linkedVerse}<br><br>`;
+        } else {
+            formattedText += `${title}<br>${rest.join('\n')}<br><br>`;
+        }
+    });
+    mysteryText.innerHTML = formattedText;
+
+    // Adicionar eventos
+    addEvents();
+}
+        
+        // Função para adicionar eventos
+        function addEvents() {
+            document.querySelectorAll('.rosary-item').forEach(item => {
+                const checkbox = item.querySelector('.checkbox');
+                const element = item.querySelector('.bead, .cross, .pendant');
+                const prayerType = element.getAttribute('data-prayer');
+
+                checkbox.addEventListener('change', () => {
+                    item.classList.toggle('completed', checkbox.checked);
+                });
+
+                element.addEventListener('click', () => {
+                    let fullPrayer = '';
+                    if (prayerType === "Sinal da Cruz") {
+                        fullPrayer = `${prayers["Sinal da Cruz"]}\n\n${prayers["Creio"]}`;
+                    } else {
+                        fullPrayer = prayers[prayerType];
+                    }
+                    prayerPopup.textContent = fullPrayer;
+                    prayerPopup.classList.toggle('active');
+                });
+            });
+        }
+
+        // Inicializar
+        updateRosary();
+
+        // Atualizar ao mudar o mistério
+        mysteryChoice.addEventListener('change', updateRosary);
+
+        // Fechar pop-up ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (!prayerPopup.contains(e.target) && !e.target.closest('.bead, .cross, .pendant')) {
+                prayerPopup.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
